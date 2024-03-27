@@ -35,10 +35,26 @@ for image in images:
 
         # Draw and display the corners
         cv.drawChessboardCorners(img, chessboardSize, corners2, ret)
-        cv.imshow('img', img)
-        cv.waitKey(1000)
+        # cv.imshow('img', img)
+        # cv.waitKey(1000)
 
 cv.destroyAllWindows()
 
 
 ########## CALIBRATION
+
+ret, cameraMatrix, dist, rvecs, tvecs = cv.calibrateCamera(objPoints, imgPoints, frameSize, None, None)
+
+print("Camera Calibrated: ", ret, "\n")
+# [fx 0  cx]   [1.45509271e+03 0.00000000e+00 9.33812616e+02]
+# [0  fy cy]   [0.00000000e+00 1.45947634e+03 4.81809080e+02]
+# [0  0  1 ]   [0.00000000e+00 0.00000000e+00 1.00000000e+00]
+# fx and fy are focal length and cx and cy are optical center coordinates
+
+print("Camera Matrix: ", cameraMatrix, "\n")
+print("Distortion Parameters: ", dist, "\n")
+print("Rotation Vectors: ", rvecs, "\n")
+print("Translation Vectors: ", tvecs, "\n")
+
+
+########## UNDISTORTION
