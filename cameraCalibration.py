@@ -58,3 +58,32 @@ print("Translation Vectors: ", tvecs, "\n")
 
 
 ########## UNDISTORTION
+
+img = cv.imread('extracted_images/image_0030.jpg')
+h, w = img.shape[:2]
+newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w, h), 1, (w, h))
+
+# undistort the image
+dst = cv.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
+# crop the image
+x, y, w, h = roi
+dst = dst[y:y+h, x:x+w]
+cv.imwrite('calibrated_image_0030.jpg', dst)
+
+# undistort with Remapping
+mapx, mapy = cv.initUndistortRectifyMap(cameraMatrix, dist, None, cameraMatrix, (w,h), 5)
+dst = cv.remap(img, mapx, mapy, cv.INTER_LINEAR)
+# crop the image
+x, y, w, h = roi
+dst = dst[y:y+h, x:x+w]
+cv.imwrite('remapped_image_0030.jpg', dst)
+
+# reprojection error
+mean_error = 0
+
+for i in range(len(objPoints)):
+    imgPoints2, _ = cv.projectPoints(objPoints[i], rvecs[i], tvecs[i], cameraMatrix, dist)
+    error = cv.norm(imgPoints[i], imgPoints2, cv.NORM_L2)/len(imgPoints2)
+    mean_error += error
+
+print("total error: {}".format(mean_error/len(objPoints)))
